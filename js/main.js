@@ -99,13 +99,14 @@ function reloadProfile_navbar() {
       url: "http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=" + data.credentials_username,
       method: "GET",
       error: function(jqXHR, textStatus, errorThrown) {
-        $("#navbar #navbar_profile img").src = "images/default_user.png";
+        $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
         console.log("Error at reloadProfile_navbar() :");
         console.log(jqXHR);
       },
       success: function(data) {
         if(data.error) {
           console.log("Error at reloadProfile_navbar() : " + data.error);
+          $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
           return;
         }
         var xhr = new XMLHttpRequest();
