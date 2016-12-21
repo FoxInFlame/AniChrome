@@ -62,6 +62,21 @@ function registerEvents() {
       });
     }
   });
+  $("#navbar #navbar_profile").on("click", function() {
+    loadScreen("loading");
+    chrome.storage.sync.set({
+      credentials_username: "",
+      credentials_password: "",
+      credentials_loggedIn: false,
+      credentials_userImage: "images/default_user.png"
+    }, function() {
+      loadScreen("finished");
+      window.setTimeout(function() {
+        $("#launch_loading").removeClass("finish");
+        launchLogin();
+      });
+    });
+  });
 }
 
 function reloadProfile_navbar() {
@@ -71,19 +86,34 @@ function reloadProfile_navbar() {
   }, function(data) {
     console.log(data);
     $.ajax({
-      url: "http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=" + data.credentials_username,
-      method: "GET",
+      url: 'http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=' + data.credentials_username,
+      method: 'GET',
       error: function(jqXHR, textStatus, errorThrown) {
-        $("#navbar #navbar_profile img").src="images/default_user.png";
-        console.log("Error at reloadProfile_navbar() :");
+        $("#navbar #navbar_profile img").src = 'images/default_user.png';
+        console.log('Error at reloadProfile_navbar() :');
         console.log(jqXHR);
       },
       success: function(data) {
         if(data.error) {
-          console.log("Error at reloadProfile_navbar() :");
-          console.log(data);
+          console.log('Error at reloadProfile_navbar() :');
+          console.log(data.error);
           return;
         }
+        console.log(data.profile_image);
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.open('GET', data.profile_image, true);
+        var imageUrl;
+        xhr.onload = function(e) {
+          var urlCreator = window.URL || window.webkitURL;
+          imageUrl = urlCreator.createObjectURL(this.response);
+          chrome.storage.sync.set({
+            credentials_userImage: imageUrl,
+          }, function() {
+            $("#navbar #navbar_profile img").attr("src", imageUrl);
+          });
+        };
+        xhr.send();
       }
     });
   });
@@ -132,7 +162,7 @@ function launchLogin() {
               }
             },
             success: function(data) {
-              var credentials_userImage;
+              var credentials_userImage = "images/default_user.png";
               $.ajax({
                 url: "http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=" + $("#login form #login_username").val().trim(),
                 method: "GET",
@@ -140,22 +170,23 @@ function launchLogin() {
                   credentials_userImage = "images/default_user.png";
                 },
                 success: function(data) {
-                  console.log(data);
+                  credentials_userImage = data.profile_image;
+                  chrome.storage.sync.set({
+                    credentials_loggedIn: true,
+                    credentials_username: $("#login form #login_username").val().trim(),
+                    credentials_password: $("#login form #login_username").val().trim(),
+                    credentials_userImage: credentials_userImage,
+                    launch_firstTime: false
+                  }, function() {
+                    registerEvents();
+                    $("#launch_loading").removeClass("login");
+                    $("#launch_loading #login").remove();
+                    window.setTimeout(function() {
+                      $("#launch_loading").addClass("finish");
+                    }, 1000);
+                    $("#login form #login_login").off("click");
+                  });
                 }
-              });
-              chrome.storage.sync.set({
-                credentials_loggedIn: true,
-                credentials_username: $("#login form #login_username").val().trim(),
-                credentials_password: $("#login form #login_username").val().trim(),
-                credentials_userImage: credentials_userImage,
-                launch_firstTime: false
-              }, function() {
-                $("#launch_loading").removeClass("login");
-                $("#launch_loading #login").remove();
-                window.setTimeout(function() {
-                  $("#launch_loading").addClass("finish");
-                }, 1000);
-                $("#login form #login_login").off("click");
               });
             }
           });
