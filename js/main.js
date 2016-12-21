@@ -82,9 +82,8 @@ function launchLogin() {
           }, function() {
             registerEvents();
             $("#launch_loading").removeClass("login");
-            $("#launch_loading #login").removeClass("fadeIn");
+            $("#launch_loading #login").remove();
             window.setTimeout(function() {
-              $("#launch_loading #login").remove();
               $("#launch_loading").addClass("finish");
             }, 1000);
           });
@@ -109,9 +108,9 @@ function launchLogin() {
                 launch_firstTime: false
               }, function() {
                 $("#launch_loading").removeClass("login");
+                $("#launch_loading #login").remove();
                 window.setTimeout(function() {
                   $("#launch_loading").addClass("finish");
-                  $("#launch_loading #login").remove();
                 }, 1000);
                 $("#login form #login_login").off("click");
               });
