@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Login</title>
+    <style>
+      #loginWrapper {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    This page is not supposed to be viewed directly. Please open AniChrome to see this page.
+    <div id="loginWrapper">
+      <div id="login">
+        <link rel="stylesheet" type="text/css" href="css/login.css">
+        <form class="z-depth-1">
+          <h3>Login to your MAL account</h3>
+          <input id="login_username" placeholder="Username" type="text" name="username"><br>
+          <input id="login_password" placeholder="Password" type="password" name="password"><br>
+          <div id="login_buttons">
+            <a href="javascript:void(0);" id="login_skip" type="button" class="waves-effect waves-button">Skip</a>
+            <a href="javascript:void(0);" id="login_login" type="button" class="waves-effect waves-button waves-float waves-light">Login</a>
+          </div>
+        </form>
+        <script>
+          Waves.init();
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
