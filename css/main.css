@@ -90,12 +90,42 @@ html, body {
 
 #navbar i.material-icons {
   color: white;
-  line-height: 46px;
-  padding: 0 8px;
+  line-height: 38px;
+  margin: 4px 4px;
+  padding: 0;
+  height: 38px;
+  width: 38px;
+  font-size: 24px;
 }
 
 #navbar #navbar_search {
-  float: left;
+  position: absolute;
+  right: 46px;
+  display: block;
+}
+
+#navbar #navbar_search_icon {
+  position: absolute;
+  transition: right 0.2s;
+  right: 0;
+}
+
+#navbar #navbar_profile {
+  right: 0;
+  position: absolute;
+  display: block;
+  height: 38px;
+  width: 38px;
+  margin: 4px 4px;
+  padding: 0;
+  z-index: 1;
+}
+
+#navbar #navbar_profile img {
+  margin: 4px 0;
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
 }
 
 #navbar #navbar_search_search {
@@ -103,17 +133,22 @@ html, body {
   height: 46px;
   line-height: 46px;
   width: 200px;
-  position: relative;
-  float: right;
+  position: absolute;
+  right: 0;
+  top: 0;
   background: transparent;
   padding: 0 8px;
   color: white;
   transition: margin-right 0.2s ease;
-  margin-right: -216px;
+  margin-right: -262px;
 }
 
-#navbar #navbar_search_search.shown {
-  margin-right: 0;
+#navbar #navbar_search.shown #navbar_search_search {
+  margin-right: 46px;
+}
+
+#navbar #navbar_search.shown #navbar_search_icon {
+  right: 262px;
 }
 
 #navbar #navbar_search_search:focus {
