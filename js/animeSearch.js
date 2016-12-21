@@ -18,6 +18,7 @@ function animeSearch(query) {
       console.log(data);
       responseAnime = data.anime;
       $("#searchResults_query").html("Search for " + query + " returned " + responseAnime.length + " anime");
+      $("#searchResults").html("");
       responseAnime.forEach(function(index, i) {
         var xhr = new XMLHttpRequest();
         xhr.responseType = 'blob';

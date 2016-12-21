@@ -2,12 +2,14 @@
   loadScript("libraries/jQuery/jquery-2.2.4.min.js", function() {
     console.log("jQuery loaded");
     loadScript("js/parser.js", function() {
-      loadStylesheet("css/base.css", function() {
-        console.log("css loaded");
-        loadScript("libraries/Waves/waves.min.js", function() {
-          loadStylesheet("libraries/Waves/waves.min.css", function() {
-            Waves.init();
-            launchLogin();
+      loadScript("js/animeSearch.js", function() {
+        loadStylesheet("css/base.css", function() {
+          console.log("css loaded");
+          loadScript("libraries/Waves/waves.min.js", function() {
+            loadStylesheet("libraries/Waves/waves.min.css", function() {
+              Waves.init();
+              launchLogin();
+            });
           });
         });
       });
@@ -66,9 +68,7 @@ function registerEvents() {
     if(event.keyCode == 13) {
       loadScreen("loading");
       $("#content").load("sections/animeSearch.html #content > *", function() {
-        loadScript("js/animeSearch.js", function() {
-          animeSearch($("#navbar #navbar_search_search").val().trim());
-        });
+        animeSearch($("#navbar #navbar_search_search").val().trim());
       });
     }
   });
@@ -149,7 +149,8 @@ function launchLogin() {
         $("#login form #login_skip").on("click", function() {
           $("#login form").removeClass("fadeIn");
           chrome.storage.local.set({
-            launch_firstTime: false
+            launch_firstTime: false,
+            credentials_loggedIn: false
           }, function() {
             registerEvents();
             $("#launch_loading").removeClass("login");
