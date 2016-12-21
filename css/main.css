@@ -19,6 +19,7 @@ html, body {
   -webkit-transition: visibility 1s ease 0s, opacity 1s ease 0s;
   -moz-transition: visibility 1s ease 0s, opacity 1s ease 0s;
   -o-transition: visibility 1s ease 0s, opacity 1s ease 0s;
+  overflow: hidden;
 }
 
 #launch_loading {
@@ -50,11 +51,11 @@ html, body {
 }
 
 #launch_loading.finish .MALicon img, #loading.finish .MALicon img {
-  transform: scale(0, 0);
-  transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-  -webkit-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-  -moz-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-  -o-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  transform: scale(2, 2);
+  transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045), transform 0.5s ease-out 0.5s;
+  -webkit-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045), transform 0.5s ease-out 0.5s;
+  -moz-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045), transform 0.5s ease-out 0.5s;
+  -o-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045), transform 0.5s ease-out 0.5s;
 }
 
 #launch_loading.finish, #loading.finish {
