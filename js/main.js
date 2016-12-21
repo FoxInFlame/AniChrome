@@ -128,9 +128,10 @@ function animeSearch(query) {
     url: "https://myanimelist.net/api/anime/search.xml?q=" + query,
     method: "GET",
     error: function(jqXHR, textStatus, errorThrown) {
-      console.log(jqXHR);
-      console.log(textStatus);
-      console.log(errorThrown);
+      if(jqXHR.status == 401) {
+        $("#searchResults_query").html("You need to login to search.");
+        loadScreen("finished");
+      }
     },
     success: function(data) {
       if(!data) {
