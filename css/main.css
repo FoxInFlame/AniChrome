@@ -1,0 +1,126 @@
+@import url('fonts.css');
+
+html, body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Roboto' sans-serif;
+  background-color: #f8f8f8;
+  overflow: auto;
+}
+
+#launch_loading, #loading {
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 1s ease 0s, opacity 1s ease 0s;
+  -webkit-transition: visibility 1s ease 0s, opacity 1s ease 0s;
+  -moz-transition: visibility 1s ease 0s, opacity 1s ease 0s;
+  -o-transition: visibility 1s ease 0s, opacity 1s ease 0s;
+}
+
+#launch_loading {
+  background: #2e51a2;
+}
+
+#loading {
+  background: #2e51a2;
+  opacity: 0.1;
+}
+
+#launch_loading .MALicon, #loading .MALicon {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#launch_loading .MALicon img, #loading .MALicon img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -100px;
+  height: 200px;
+  width: 200px;
+  transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -moz-transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -o-transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#launch_loading.finish .MALicon img, #loading.finish .MALicon img {
+  transform: scale(0, 0);
+  transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  -webkit-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  -moz-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  -o-transition: all 1s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+}
+
+#launch_loading.finish, #loading.finish {
+  opacity: 0;
+  visibility: hidden;
+  transition: visibility 1s ease 0.5s, opacity 1s ease 0.5s;
+  -webkit-transition: visibility 1s ease 0.5s, opacity 1s ease 0.5s;
+  -moz-transition: visibility 1s ease 0.5s, opacity 1s ease 0.5s;
+  -o-transition: visibility 1s ease 0.5s, opacity 1s ease 0.5s;
+}
+
+#launch_loading.login .MALicon img {
+  transform: scale(0.75);
+  top: 50px;
+  height: 150px;
+  width: 150px;
+  margin: -75px 0 0 -75px;
+  transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+  -webkit-transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+  -moz-transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+  -o-transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#navbar {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 46px;
+  line-height: 46px;
+  background: #244081;
+}
+
+#navbar i.material-icons {
+  color: white;
+  line-height: 46px;
+  padding: 0 8px;
+}
+
+#navbar #navbar_search {
+  float: left;
+}
+
+#navbar #navbar_search_search {
+  border: 0;
+  height: 46px;
+  line-height: 46px;
+  width: 200px;
+  position: relative;
+  float: right;
+  background: transparent;
+  padding: 0 8px;
+  color: white;
+  transition: margin-right 0.2s ease;
+  margin-right: -216px;
+}
+
+#navbar #navbar_search_search.shown {
+  margin-right: 0;
+}
+
+#navbar #navbar_search_search:focus {
+  outline: none;
+}
+
+#content {
+  position: absolute;
+  top: 46px;
+}
