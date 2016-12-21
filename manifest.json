@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "AniChrome",
+  "author": "FoxInFlame",
+  "description": "View quick information about anime.",
+  "version": "0.1",
+  "icons": {
+    "32": "icons/32.png",
+    "64": "icons/64.png",
+    "128": "icons/128.png",
+    "256": "icons/256.png"
+  },
+  "offline_enabled": true,
+  "app": {
+    "background": {
+      "scripts": [
+        "libraries/jQuery/jquery-2.2.4.min.js",
+        "background.js"
+      ]
+    }
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "notifications",
+    "<all_urls>"
+  ]
+}
