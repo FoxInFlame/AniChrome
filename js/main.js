@@ -48,16 +48,44 @@ function loadScreen(status) {
 }
 
 function registerEvents() {
-  $("#navbar_search").on("click", function() {
-    $("#navbar #navbar_search_search").toggleClass("shown");
+  reloadProfile_navbar();
+  $("#navbar_search_icon").on("click", function() {
+    $("#navbar #navbar_search").toggleClass("shown");
   });
   $("#navbar #navbar_search_search").keyup(function(event) {
     if(event.keyCode == 13) {
       loadScreen("loading");
       $("#content").load("sections/animeSearch.html #content > *", function() {
-        animeSearch($("#navbar #navbar_search_search").val().trim());
+        loadScript("js/animeSearch.js", function() {
+          animeSearch($("#navbar #navbar_search_search").val().trim());
+        });
       });
     }
+  });
+}
+
+function reloadProfile_navbar() {
+  chrome.storage.sync.get({
+    credentials_username: "",
+    credentials_password: ""
+  }, function(data) {
+    console.log(data);
+    $.ajax({
+      url: "http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=" + data.credentials_username,
+      method: "GET",
+      error: function(jqXHR, textStatus, errorThrown) {
+        $("#navbar #navbar_profile img").src="images/default_user.png";
+        console.log("Error at reloadProfile_navbar() :");
+        console.log(jqXHR);
+      },
+      success: function(data) {
+        if(data.error) {
+          console.log("Error at reloadProfile_navbar() :");
+          console.log(data);
+          return;
+        }
+      }
+    });
   });
 }
 
@@ -65,8 +93,9 @@ function launchLogin() {
   chrome.storage.sync.get({
     launch_firstTime: true,
     credentials_loggedIn: false,
-    credentials_username: "Example",
-    credentials_password: ""
+    credentials_username: "",
+    credentials_password: "",
+    credentials_userImage: "images/default_user.png"
   }, function(data) {
     if(data.credentials_loggedIn === true && data.launch_firstTime === false) {
       registerEvents();
@@ -103,8 +132,22 @@ function launchLogin() {
               }
             },
             success: function(data) {
+              var credentials_userImage;
+              $.ajax({
+                url: "http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=" + $("#login form #login_username").val().trim(),
+                method: "GET",
+                error: function(jqXHR, textStatus, errorThrown) {
+                  credentials_userImage = "images/default_user.png";
+                },
+                success: function(data) {
+                  console.log(data);
+                }
+              });
               chrome.storage.sync.set({
                 credentials_loggedIn: true,
+                credentials_username: $("#login form #login_username").val().trim(),
+                credentials_password: $("#login form #login_username").val().trim(),
+                credentials_userImage: credentials_userImage,
                 launch_firstTime: false
               }, function() {
                 $("#launch_loading").removeClass("login");
@@ -118,56 +161,6 @@ function launchLogin() {
           });
         });
       }, 1000);
-    }
-  });
-}
-
-function animeSearch(query) {
-  $.ajax({
-    url: "https://myanimelist.net/api/anime/search.xml?q=" + query,
-    method: "GET",
-    error: function(jqXHR, textStatus, errorThrown) {
-      if(jqXHR.status == 401) {
-        $("#searchResults_query").html("You need to login to search.");
-        loadScreen("finished");
-      }
-    },
-    success: function(data) {
-      if(!data) {
-        $("#searchResults_query").html("Search for " + query + " returned 0 anime");
-        loadScreen("finished");
-        return;
-      }
-      data = xml2json(data);
-      console.log(data);
-      responseAnime = data.anime;
-      $("#searchResults_query").html("Search for " + query + " returned " + responseAnime.length + " anime");
-      responseAnime.forEach(function(index, i) {
-        var xhr = new XMLHttpRequest();
-        xhr.responseType = 'blob';
-        xhr.open('GET', index.image, true);
-        var imageUrl;
-        xhr.onload = function(e) {
-          var urlCreator = window.URL || window.webkitURL;
-          imageUrl = urlCreator.createObjectURL(this.response);
-          document.getElementById("searchResult-anime-image-" + index.id).src = imageUrl;
-        };
-        xhr.send();
-        $("#searchResults").append(
-          "<div class=\"searchResult-anime\" data-id=\"" + index.id + "\">" +
-            "<div class=\"searchResult-anime-image\">" +
-              "<img id=\"searchResult-anime-image-" + index.id + "\" src=\"#\">" +
-            "</div>" +
-            "<div class=\"searchResult-anime-info\">" +
-              "<span class=\"searchResult-anime-title\">" + index.title + "</span>" +
-              "<span class=\"searchResult-anime-status\">" + index.status + "</span>" +
-              "<span class=\"searchResult-anime-type\">" + index.type + "</span>" +
-              "<span class=\"searchResult-anime-episodes\">" + index.episodes +"</span>" +
-            "</div>" +
-          "</div>"
-        );
-      });
-      loadScreen("finished");
     }
   });
 }
