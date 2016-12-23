@@ -96,7 +96,7 @@ function reloadProfile_navbar() {
     credentials_password: ""
   }, function(data) {
     $.ajax({
-      url: "http://www.foxinflame.tk/dev/matomari/api/userInfo.php?username=" + data.credentials_username,
+      url: "http://www.foxinflame.tk/dev/matomari/api/user/info/" + data.credentials_username + ".json",
       method: "GET",
       error: function(jqXHR, textStatus, errorThrown) {
         $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
