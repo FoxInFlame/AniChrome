@@ -96,7 +96,7 @@ function reloadProfile_navbar() {
     credentials_password: ""
   }, function(data) {
     $.ajax({
-      url: "http://www.foxinflame.tk/dev/matomari/api/user/info/" + data.credentials_username + ".json",
+      url: "http://matomari.tk/api/0.3/user/info/" + data.credentials_username + ".json",
       method: "GET",
       error: function(jqXHR, textStatus, errorThrown) {
         $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
@@ -179,7 +179,7 @@ function launchLogin() {
               chrome.storage.local.set({
                 credentials_loggedIn: true,
                 credentials_username: $("#login form #login_username").val().trim(),
-                credentials_password: $("#login form #login_username").val().trim(),
+                credentials_password: $("#login form #login_password").val().trim(),
                 launch_firstTime: false
               }, function() {
                 registerEvents();

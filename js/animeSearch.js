@@ -4,7 +4,7 @@ function animeSearch(query) {
   }, function(data) {
     if(data.credentials_loggedIn) {
       $.ajax({
-        url: "https://myanimelist.net/api/anime/search.xml?q=" + query,
+        url: "http://matomari.tk/api/0.3/anime/search/" + query + ".json",
         method: "GET",
         error: function(jqXHR, textStatus, errorThrown) {
           if(jqXHR.status == 401) {
@@ -13,17 +13,23 @@ function animeSearch(query) {
           }
         },
         success: function(data) {
-          if(!data) {
+          if(data.error) {
+            $("#searchResults_query").html(data.error);
+            loadScreen("finished");
+            return;
+          }
+          if(data.results.length === 0) {
             $("#searchResults_query").html("Search for " + query + " returned 0 anime");
             loadScreen("finished");
             return;
           }
-          data = xml2json(data);
           console.log(data);
-          responseAnime = data.anime;
+          responseAnime = data.results;
           $("#searchResults_query").html("Search for " + query + " returned " + responseAnime.length + " anime");
           $("#searchResults").html("");
           responseAnime.forEach(function(index, i) {
+            index.image = index.image.split(" 1x, ")[1];
+            index.image = index.image.slice(0, -3);
             var xhr = new XMLHttpRequest();
             xhr.responseType = 'blob';
             xhr.open('GET', index.image, true);
@@ -41,7 +47,7 @@ function animeSearch(query) {
                 "</div>" +
                 "<div class=\"searchResult-anime-info\">" +
                   "<span class=\"searchResult-anime-title\">" + index.title + "</span>" +
-                  "<span class=\"searchResult-anime-status\">" + index.status + "</span>" +
+                  "<span class=\"searchResult-anime-status\">" + index.score + "</span>" +
                   "<span class=\"searchResult-anime-type\">" + index.type + "</span>" +
                   "<span class=\"searchResult-anime-episodes\">" + index.episodes +"</span>" +
                 "</div>" +
