@@ -15,16 +15,81 @@ var launchAniChrome = function () {
   });
 };
 
+
 var onNotificationsClicked = function(id) {
   // Only launch if no other windows exist.
   var windows = chrome.app.window.getAll();
   if (windows && windows.length === 0) {
-    chrome.notifications.clear(id, function() {}); // Callback required.
-    launchAniChrome();
+    chrome.notifications.clear(id, function() {
+      launchAniChrome();
+    });
   }
 };
+
 chrome.app.runtime.onLaunched.addListener(launchAniChrome);
 chrome.notifications.onClicked.addListener(onNotificationsClicked);
+chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
+  if(id.indexOf("notification_newmessage_") !== -1) {
+    var action_id = id.substring(24);
+    var action;
+    var action_display;
+    if(buttonIndex === 0) {
+      action = "read";
+      action_display = "read";
+    } else if(buttonIndex === 1){
+      action = "delete";
+      action_display = "deleted";
+    }
+    chrome.notifications.clear(id, function() {
+      chrome.storage.local.get({
+        credentials_username: "",
+        credentials_password: "",
+        credentials_loggedIn: false
+      }, function(data) {
+        console.log("Notification clicked");
+        if(data.credentials_loggedIn) callAjax(data);
+      });
+      function callAjax(storage) {
+        $.ajax({
+          url: "http://www.matomari.tk/api/0.4/methods/user.messages.2.php",
+          method: "POST",
+          dataType: "json",
+          username: storage.credentials_username,
+          password: storage.credentials_password,
+          data: JSON.stringify({
+            id: action_id,
+            action: action
+          }),
+          error: function(jqXHR, textStatus, errorThrown) {
+            chrome.notifications.create("notification_newmessage_markas" + action_display + "_error", {
+              type: "basic",
+              title: "Error marking as " + action_display,
+              message: "Could not mark message with action_id " + action_id + " as " + action_display + "\nStatus:" + jqXHR.status,
+              iconUrl: "images/notification_warning_red.png"
+            }, function() {
+              chrome.notifications.clear("notification_newmessage_markas" + action_display + "_error", function() {});
+            }, 4000);
+          },
+          success: function(data) {
+            if(data.error) {
+              chrome.notifications.create("notification_newmessage_markas" + action_display + "_error", {
+                type: "basic",
+                title: "Error marking as " + action_display,
+                message: data.error,
+                iconUrl: "images/notification_warning_red.png"
+              }, function() {
+                window.setTimeout(function() {
+                  chrome.notifications.clear("notification_newmessage_markas" + action_display + "_error", function() {});
+                }, 4000);
+              });
+              return;
+            }
+          }
+        });
+      }
+    });
+  }
+});
 chrome.alarms.onAlarm.addListener(function(alarm) {
   if(alarm.name == "queryMessages") {
     console.log("Querying for new messages...");
@@ -41,6 +106,11 @@ chrome.alarms.create("queryMessages", {
   when: Date.now() + 300000 // 5 minute,
 });
 
+function htmlDecode(input){
+  var e = document.createElement('div');
+  e.innerHTML = input;
+  return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+}
 
 function queryMessages() {
   chrome.storage.local.get({
@@ -56,7 +126,7 @@ function queryMessages() {
   });
   function callAjax(storage) {
     $.ajax({
-      url: "http://www.matomari.tk/api/0.3/user/messages.php",
+      url: "http://www.matomari.tk/api/0.4/methods/user.messages.php",
       method: "GET",
       username: storage.credentials_username,
       password: storage.credentials_password,
@@ -65,46 +135,25 @@ function queryMessages() {
           type: "basic",
           title: "Error when loading new messages",
           message: jqXHR.status + " - " + textStatus,
-          iconUrl: "icons/64.png"
+          iconUrl: "images/notification_warning_red.png"
         }, function() {});
       },
       success: function(data) {
         console.log(storage.data_messages);
         console.log(data);
-        for(var i = 0; i < data.messages.length; i++) {
-          if(data.messages[i].read === false) {
-            createNewMessageNotification(data.messages[i], i + 1);
-          }
-        }
-        /*var newmessageCount = data.total - storage.data_messages.total;
-        if(newmessageCount === 0) {
-          // No new messages
-          return;
-        }
-        if(newmessageCount > 5) {
-          chrome.notifications.create("notification_newmessage_count", {
-            type: "basic",
-            title: "New Messages",
-            message: "You have " + newmessageCount.toString() + " new messages!",
-            iconUrl: "icons/128.png"
-          }, function() {
-            window.setTimeout(function() {
-              chrome.notifications.clear("notification_newmessage_count", function() {});
-            }, 10000);
-          });
-        }
         chrome.storage.local.set({
           data_messages: data
         }, function() {
-          for(var i = 0; i < newmessageCount; i++) {
-            createNewMessageNotification(data.messages[i], i + 1);
+          for(var i = 0; i < data.messages.length; i++) {
+            if(data.messages[i].read === false) {
+              createNewMessageNotification(data.messages[i], i + 1);
+            }
           }
-        });*/
+        });
       }
     });
   }
 }
-
 function queryNotifications() {
   chrome.storage.local.get({
     credentials_username: "",
@@ -121,6 +170,7 @@ function queryNotifications() {
     $.ajax({
       url: "http://www.matomari.tk/api/0.3/user/notifications/Example.json",
       method: "GET",
+      dataType: "json",
       username: storage.credentials_username,
       password: storage.credentials_password,
       error: function(jqXHR, textStatus, errorThrown) {
@@ -128,7 +178,7 @@ function queryNotifications() {
           type: "basic",
           title: "Error when loading new notifications",
           message: jqXHR.status + " - " + textStatus,
-          iconUrl: "icons/64.png"
+          iconUrl: "images/notification_warning_red.png"
         }, function() {});
       },
       success: function(data) {
@@ -175,14 +225,15 @@ function createNewNotificationNotification(notification, i) {
 
 function createNewMessageNotification(message, i) {
   $.ajax({
-    url: "http://www.matomari.tk/api/0.3/user/info/" + message.sender.username + ".json",
+    url: "http://www.matomari.tk/api/0.4/methods/user.info.USERNAME.php?username=" + message.sender.username,
     method: "GET",
+    datatType: "json",
     error: function(jqXHR, textStatus, errorThrown) {
       chrome.notifications.create("notification_newnotification_error", {
         type: "basic",
-        title: "Error when loading new notifications",
+        title: "Error when loading user image for " + message.sender.username,
         message: jqXHR.status + " - " + textStatus,
-        iconUrl: "icons/128.png"
+        iconUrl: "images/notification_warning_red.png"
       }, function() {});
     },
     success: function(data) {
@@ -192,22 +243,26 @@ function createNewMessageNotification(message, i) {
   function showNotification(userInfo) {
     var options = {
       type: "basic",
-      title: message.sender.username + " - " + message.subject,
-      message: message.body_preview,
+      title: message.sender.username + " - " + htmlDecode(message.subject),
+      message: htmlDecode(message.body_preview),
       buttons: [
         {
           title: "Mark as read",
-          iconUrl: "icons/64.png"
+          iconUrl: "images/notification_check.png"
+        },
+        {
+          title: "Delete",
+          iconUrl: "images/notification_delete.png"
         }
       ]
     };
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", userInfo.profile_image);
+    xhr.open("GET", userInfo.image_url);
     xhr.responseType = "blob";
     xhr.onload = function() {
       var blob = this.response;
       options.iconUrl = window.URL.createObjectURL(blob);
-      chrome.notifications.create("notification_newmessage_" + message.id, options, function() {});
+      chrome.notifications.create("notification_newmessage_" + message.action_id, options, function() {});
     };
     xhr.send();
   }
