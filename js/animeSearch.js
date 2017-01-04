@@ -4,7 +4,7 @@ function animeSearch(query) {
   }, function(data) {
     if(data.credentials_loggedIn) {
       $.ajax({
-        url: "http://matomari.tk/api/0.3/anime/search/" + query + ".json",
+        url: "http://www.matomari.tk/api/0.3/anime/search/" + query + ".json",
         method: "GET",
         error: function(jqXHR, textStatus, errorThrown) {
           if(jqXHR.status == 401) {

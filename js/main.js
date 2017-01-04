@@ -96,7 +96,7 @@ function reloadProfile_navbar() {
     credentials_password: ""
   }, function(data) {
     $.ajax({
-      url: "http://matomari.tk/api/0.3/user/info/" + data.credentials_username + ".json",
+      url: "http://www.matomari.tk/api/0.3/user/info/" + data.credentials_username + ".json",
       method: "GET",
       error: function(jqXHR, textStatus, errorThrown) {
         $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
@@ -123,7 +123,7 @@ function reloadProfile_navbar() {
               $("#navbar #navbar_profile img").attr("src", imageBase64);
             });
           };
-          reader.readAsDataURL(this.response);
+          reader.readAsDataURL(xhr.response);
         };
         xhr.send();
       }
