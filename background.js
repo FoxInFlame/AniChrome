@@ -168,7 +168,7 @@ function queryNotifications() {
   });
   function callAjax(storage) {
     $.ajax({
-      url: "http://www.matomari.tk/api/0.3/user/notifications/Example.json",
+      url: "http://www.matomari.tk/api/0.4/methods/user.notifications.php",
       method: "GET",
       dataType: "json",
       username: storage.credentials_username,

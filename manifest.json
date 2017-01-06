@@ -23,6 +23,8 @@
     "storage",
     "unlimitedStorage",
     "notifications",
+    "alarms",
+    "https://myanimelist.cdn-dena.com/*",
     "<all_urls>"
   ]
 }
