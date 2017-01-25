@@ -1,11 +1,18 @@
-.__animeResults_main {
+.__animeResults_wrapper {
   width: 80%;
   min-height: 520px;
   padding-left: 4px;
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  justify-content: center;
+  -webkit-justify-content: center;
+  margin: 0 auto;
 }
 
 .__animeResults_result {
-  width: 256px;
-  height: 400px;
+  width: 128px; /*Size taken from WattPad book cover size (256x400), should be pretty similar to be hoenst*/
+  height: 200px;
   float: left;
 }
