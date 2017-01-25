@@ -3,28 +3,15 @@
   height: 520px;
 }
 
-.left-side {
-  float: left;
-  width: 290px; /*remove border, padding, and scrollbar*/
-  border-right: 2px solid #eeeeee;
-  overflow: auto;
-  height: 100%;
+#searchResult_top {
+  height: 30px;
+  width: 100%;
 }
 
-.right-side {
-  float: right;
-  width: 495px;
+#searchResults {
+  width: calc(100% - 4px);
   min-height: 520px;
-  padding-left: 4px;
-}
-
-#searchResults_query {
-  width: calc(100% - 20px);
-  height: 24px;
-  background: #abb9d9;
-  line-height: 24px;
-  color: #fff;
-  padding: 0 12px 0 8px;
+  padding-left: 4px; /* The right side is the scrollbar */
 }
 
 .searchResult-anime {

@@ -1,0 +1,11 @@
+.__animeResults_main {
+  width: 80%;
+  min-height: 520px;
+  padding-left: 4px;
+}
+
+.__animeResults_result {
+  width: 256px;
+  height: 400px;
+  float: left;
+}
