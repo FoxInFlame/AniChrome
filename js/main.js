@@ -7,7 +7,9 @@
             loadStylesheet("libraries/Waves/waves.min.css", function() {
               Waves.init();
               loadScript("js/animeResults.js", function() {
-                launchLogin();
+                loadStylesheet("css/animeResults.css", function() {
+                  launchLogin();
+                });
               });
             });
           });

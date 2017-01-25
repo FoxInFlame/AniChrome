@@ -1,4 +1,10 @@
 $.fn.animeResults = function(data) {
+  var shownType = "grid"; // grid or list
+  var display = "<div class=\"__animeResults_wrapper\">"; // Final HTML
+  
+  this.css("overflow", "scroll");
+  this.css("height", "100%");
+  
   /*
   [
     {
@@ -50,8 +56,12 @@ $.fn.animeResults = function(data) {
     if(data[x].synopsis_snippet === "" || !data[x].synopsis_snippet) {
       data[x].synopsis_snippet = "No Data";
     }
+    display += "<div class=\"__animeResults_result\">"  + data[x].title + "</div>";
   }
+
+  display += "</div>";
   
+  this.html(display);
   console.log(data);
   
 };
