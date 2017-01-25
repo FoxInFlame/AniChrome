@@ -2,6 +2,7 @@ var launchAniChrome = function () {
   queryMessages();
   queryNotifications();
   chrome.app.window.create('main.html', {
+    id: "anichrome_main",
     outerBounds: {
       width: 800,
       height: 600
@@ -9,10 +10,35 @@ var launchAniChrome = function () {
     //alwaysOnTop: true,
     resizable: false,
     frame: {
-      type: 'chrome',
-      color: '#2e51a2'
+      type: "chrome",
+      color: "#2e51a2"
     }
+  }, function() {
+    chrome.app.window.get("anichrome_main").onClosed.addListener(function() {
+      chrome.storage.local.get({
+        launch_firstTime: true
+      }, function(data) {
+        console.log(data);
+        if(data.launch_firstTime) {
+          chrome.storage.local.set({
+            launch_firstTime: false
+          }, function() {
+            chrome.notifications.create("notification_info", {
+              type: "basic",
+              title: "AniChrome is running in the background",
+              message: "AniChrome is running in the background to query for new messages and notifications.",
+              iconUrl: "images/notification_info_blue.png"
+            }, function() {
+              window.setTimeout(function() {
+                chrome.notifications.clear("notification_info");
+              }, 5000);
+            });
+          });
+        }
+      });
+    });
   });
+  
 };
 
 
@@ -51,7 +77,7 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
       });
       function callAjax(storage) {
         $.ajax({
-          url: "http://www.matomari.tk/api/0.4/methods/user.messages.2.php",
+          url: "https://www.matomari.tk/api/0.4/methods/user.messages.2.php",
           method: "POST",
           dataType: "json",
           username: storage.credentials_username,
@@ -67,8 +93,10 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
               message: "Could not mark message with action_id " + action_id + " as " + action_display + "\nStatus:" + jqXHR.status,
               iconUrl: "images/notification_warning_red.png"
             }, function() {
-              chrome.notifications.clear("notification_newmessage_markas" + action_display + "_error", function() {});
-            }, 4000);
+              window.setTimeout(function() {
+                chrome.notifications.clear("notification_newmessage_markas" + action_display + "_error", function() {});
+              }, 4000);
+            });
           },
           success: function(data) {
             if(data.error) {
@@ -126,17 +154,23 @@ function queryMessages() {
   });
   function callAjax(storage) {
     $.ajax({
-      url: "http://www.matomari.tk/api/0.4/methods/user.messages.php",
+      url: "https://www.matomari.tk/api/0.4/methods/user.messages.php",
       method: "GET",
       username: storage.credentials_username,
       password: storage.credentials_password,
       error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(storage);
         chrome.notifications.create("notification_newmessage_error", {
           type: "basic",
           title: "Error when loading new messages",
           message: jqXHR.status + " - " + textStatus,
           iconUrl: "images/notification_warning_red.png"
-        }, function() {});
+        }, function() {
+          window.setTimeout(function() {
+            chrome.notifications.clear("notification_newmessage_error");
+          }, 4000);
+        });
       },
       success: function(data) {
         console.log(storage.data_messages);
@@ -168,7 +202,7 @@ function queryNotifications() {
   });
   function callAjax(storage) {
     $.ajax({
-      url: "http://www.matomari.tk/api/0.4/methods/user.notifications.php",
+      url: "https://www.matomari.tk/api/0.4/methods/user.notifications.php",
       method: "GET",
       dataType: "json",
       username: storage.credentials_username,
@@ -179,10 +213,14 @@ function queryNotifications() {
           title: "Error when loading new notifications",
           message: jqXHR.status + " - " + textStatus,
           iconUrl: "images/notification_warning_red.png"
-        }, function() {});
+        }, function() {
+          window.setTimeout(function() {
+            chrome.notifications.clear("notification_newnotification_error");
+          }, 4000);
+        });
       },
       success: function(data) {
-        var newnotificationCount = data.items.length - storage.data_notifications.total;
+        var newnotificationCount = data.new.length - storage.data_notifications.total;
         if(newnotificationCount === 0) {
           // No new messages
           return;
@@ -201,12 +239,12 @@ function queryNotifications() {
         }
         chrome.storage.local.set({
           data_notifications: {
-            notifications: data.items,
-            total: data.items.length
+            notifications: data.new,
+            total: data.new.length
           }
         }, function() {
           for(var i = 0; i < newnotificationCount; i++) {
-            createNewNotificationNotification(data.items[i], i + 1);
+            createNewNotificationNotification(data.new[i], i + 1);
           }
         });
       }
@@ -225,7 +263,7 @@ function createNewNotificationNotification(notification, i) {
 
 function createNewMessageNotification(message, i) {
   $.ajax({
-    url: "http://www.matomari.tk/api/0.4/methods/user.info.USERNAME.php?username=" + message.sender.username,
+    url: "https://www.matomari.tk/api/0.4/methods/user.info.USERNAME.php?username=" + message.sender.username,
     method: "GET",
     datatType: "json",
     error: function(jqXHR, textStatus, errorThrown) {

@@ -3,6 +3,7 @@
   <head>
     <title>Hello.</title>
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="libraries/Balloon/balloon.css">
     <script src="js/main.js"></script>
   </head>
   <body>
@@ -19,12 +20,12 @@
     <div id="body">
       <div id="navbar" class="z-depth-1">
         <div id="icons" class="left">
-          <i id="navbar_home" class="material-icons waves-effect waves-circle">home</i>
-          <i id="navbar_list" class="material-icons waves-effect waves-circle">format_list_bulleted</i>
+          <a href="#" data-balloon="Home" data-balloon-pos="down"><i id="navbar_home" class="material-icons waves-effect waves-circle">home</i></a>
+          <a href="#" data-balloon="View your list" data-balloon-pos="down"><i id="navbar_list" class="material-icons waves-effect waves-circle">format_list_bulleted</i></a>
         </div>
         <div class="right">
           <div id="navbar_search">
-            <i id="navbar_search_icon" class="material-icons waves-effect waves-circle">search</i>
+            <a href="#" data-balloon="View your list" data-balloon-pos="Search"><i id="navbar_search_icon" class="material-icons waves-effect waves-circle">search</i></a>
             <input type="text" id="navbar_search_search" placeholder="Search...">
           </div>
           <div id="navbar_profile" class="waves-effect waves-circle">
