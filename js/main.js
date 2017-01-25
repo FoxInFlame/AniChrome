@@ -1,14 +1,14 @@
 (function() {
   loadScript("libraries/jQuery/jquery-2.2.4.min.js", function() {
-    console.log("jQuery loaded");
     loadScript("js/parser.js", function() {
       loadScript("js/animeSearch.js", function() {
         loadStylesheet("css/base.css", function() {
-          console.log("css loaded");
           loadScript("libraries/Waves/waves.min.js", function() {
             loadStylesheet("libraries/Waves/waves.min.css", function() {
               Waves.init();
-              launchLogin();
+              loadScript("js/animeResults.js", function() {
+                launchLogin();
+              });
             });
           });
         });
@@ -48,8 +48,6 @@ function loadScreen(status) {
     $("#loading").addClass("finish");
   }
 }
-
-// reloadProfile_navbar();
 
 function registerEvents() {
   if(navigator.onLine) {
@@ -96,7 +94,7 @@ function reloadProfile_navbar() {
     credentials_password: ""
   }, function(data) {
     $.ajax({
-      url: "http://www.matomari.tk/api/0.3/user/info/" + data.credentials_username + ".json",
+      url: "https://www.matomari.tk/api/0.3/user/info/" + data.credentials_username + ".json",
       method: "GET",
       error: function(jqXHR, textStatus, errorThrown) {
         $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
@@ -133,13 +131,15 @@ function reloadProfile_navbar() {
 
 function launchLogin() {
   chrome.storage.local.get({
-    launch_firstTime: true,
+    credentials_firstTime: true, // Not to be confused with launch_firstTime
+    // credentials_firstTime gets set to false on first launch
+    // launch_firstTIme gets set to false on first close
     credentials_loggedIn: false,
     credentials_username: "",
     credentials_password: "",
     credentials_userImage64: "images/default_user.png"
   }, function(data) {
-    if(data.credentials_loggedIn === true && data.launch_firstTime === false) {
+    if(data.credentials_loggedIn === true && data.credentials_firstTime === false) {
       registerEvents();
       $("#launch_loading").addClass("finish");
     } else {
@@ -150,7 +150,7 @@ function launchLogin() {
         $("#login form #login_skip").on("click", function() {
           $("#login form").removeClass("fadeIn");
           chrome.storage.local.set({
-            launch_firstTime: false,
+            credentials_firstTime: false,
             credentials_loggedIn: false
           }, function() {
             registerEvents();
@@ -176,11 +176,14 @@ function launchLogin() {
               }
             },
             success: function(data) {
+              console.log(data);
+              console.log(data.getElementsByTagName("id")[0].childNodes[0].nodeValue);
               chrome.storage.local.set({
                 credentials_loggedIn: true,
-                credentials_username: $("#login form #login_username").val().trim(),
+                credentials_userid: data.getElementsByTagName("id")[0].childNodes[0].nodeValue, // Hope MAL doesn't change the response... :)
+                credentials_username: data.getElementsByTagName("username")[0].childNodes[0].nodeValue,
                 credentials_password: $("#login form #login_password").val().trim(),
-                launch_firstTime: false
+                credentials_firstTime: false
               }, function() {
                 registerEvents();
                 $("#launch_loading").removeClass("login");

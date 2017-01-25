@@ -4,7 +4,7 @@ function animeSearch(query) {
   }, function(data) {
     if(data.credentials_loggedIn) {
       $.ajax({
-        url: "http://www.matomari.tk/api/0.3/anime/search/" + query + ".json",
+        url: "https://www.matomari.tk/api/0.4/methods/anime.search.QUERY.php?q=" + query,
         method: "GET",
         error: function(jqXHR, textStatus, errorThrown) {
           if(jqXHR.status == 401) {
@@ -27,6 +27,8 @@ function animeSearch(query) {
           responseAnime = data.results;
           $("#searchResults_query").html("Search for " + query + " returned " + responseAnime.length + " anime");
           $("#searchResults").html("");
+          $("#searchResults").animeResults(responseAnime);
+          /*
           responseAnime.forEach(function(index, i) {
             index.image = index.image.split(" 1x, ")[1];
             index.image = index.image.slice(0, -3);
@@ -54,6 +56,7 @@ function animeSearch(query) {
               "</div>"
             );
           });
+          */
           loadScreen("finished");
         }
       });
