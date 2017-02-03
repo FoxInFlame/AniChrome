@@ -1,7 +1,6 @@
 .__animeResults_wrapper {
-  width: 80%;
-  min-height: 520px;
-  padding-left: 4px;
+  width: 90%;
+  padding-left: 10px;
   display: flex;
   display: -webkit-flex;
   flex-wrap: wrap;

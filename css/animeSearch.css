@@ -9,9 +9,9 @@
 }
 
 #searchResults {
-  width: calc(100% - 4px);
+  width: calc(100% - 10px);
   min-height: 520px;
-  padding-left: 4px; /* The right side is the scrollbar */
+  padding-left: 10px; /* The right side is the scrollbar */
 }
 
 .searchResult-anime {
