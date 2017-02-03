@@ -28,7 +28,7 @@ html, body {
 
 #loading {
   background: #2e51a2;
-  opacity: 0.1;
+  opacity: 0.3;
 }
 
 #launch_loading .MALicon, #loading .MALicon {
@@ -100,21 +100,18 @@ html, body {
 }
 
 #navbar #navbar_search {
-  position: absolute;
+  position: relative;
   right: 46px;
   display: block;
 }
 
 #navbar #navbar_search_icon {
-  position: absolute;
+  position: relative;
   transition: right 0.2s;
   right: 0;
 }
 
 #navbar #navbar_profile {
-  right: 0;
-  position: absolute;
-  display: block;
   height: 38px;
   width: 38px;
   margin: 4px 4px;
@@ -141,7 +138,7 @@ html, body {
   padding: 0 8px;
   color: white;
   transition: margin-right 0.2s ease;
-  margin-right: -262px;
+  /*margin-right: -262px;*/
 }
 
 #navbar #navbar_search.shown #navbar_search_search {
