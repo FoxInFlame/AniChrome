@@ -42,7 +42,11 @@ function loadStylesheet(src, callback) {
   linkElem.href = src;
   document.getElementsByTagName("head")[0].appendChild(linkElem);
 }
+
 function loadScreen(status) {
+  if(!status) {
+    return !$("#loading").hasClass("finish");
+  }
   if(status != "finished") status == "loading";
   if(status == "loading") {
     $("#loading").removeClass("finish");
@@ -66,10 +70,15 @@ function registerEvents() {
   });
   $("#navbar #navbar_search_search").keyup(function(event) {
     if(event.keyCode == 13) {
+      if(loadScreen()) return;
       loadScreen("loading");
-      $("#content").load("sections/animeSearch.html #content > *", function() {
+      if(!$("#searchResults")[0])  {
+        $("#content").load("sections/animeSearch.html #content > *", function() {
+          animeSearch($("#navbar #navbar_search_search").val().trim());
+        });
+      } else {
         animeSearch($("#navbar #navbar_search_search").val().trim());
-      });
+      }
     }
   });
   $("#navbar #navbar_profile").on("click", function() {
@@ -107,6 +116,15 @@ function reloadProfile_navbar() {
         if(data.error) {
           console.log("Error at reloadProfile_navbar() : " + data.error);
           $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
+          return;
+        }
+        $("#navbar #navbar_profile").parent().attr("data-balloon", "Text goes here");
+        if(data.profile_image === null) {
+          chrome.storage.local.set({
+            credentials_userImage64: "images/default_user.png"
+          }, function() {
+            $("#navbar #navbar_profile img").attr("src", "images/default_user.png");
+          });
           return;
         }
         var xhr = new XMLHttpRequest();

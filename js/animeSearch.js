@@ -7,18 +7,27 @@ function animeSearch(query) {
         url: "https://www.matomari.tk/api/0.4/methods/anime.search.QUERY.php?q=" + query,
         method: "GET",
         error: function(jqXHR, textStatus, errorThrown) {
+          $("#searchResults").html("");
           if(jqXHR.status == 401) {
             $("#searchResults_query").html("You need to login to search.");
             loadScreen("finished");
+            return;
+          }
+          if(jqXHR.status == 400) {
+            $("#searchResults_query").html(jqXHR.responseJSON.message);
+            loadScreen("finished");
+            return;
           }
         },
         success: function(data) {
           if(data.error) {
-            $("#searchResults_query").html(data.error);
+            $("#searchResults").html("");
+            $("#searchResults_query").html(data.message);
             loadScreen("finished");
             return;
           }
           if(data.results.length === 0) {
+            $("#searchResults").html("");
             $("#searchResults_query").html("Search for " + query + " returned 0 anime");
             loadScreen("finished");
             return;
@@ -26,37 +35,10 @@ function animeSearch(query) {
           console.log(data);
           responseAnime = data.results;
           $("#searchResults_query").html("Search for " + query + " returned " + responseAnime.length + " anime");
-          $("#searchResults").html("");
+          for(var x = 0; x < responseAnime.length; x++) {
+            responseAnime[x].image = responseAnime[x].image_2x;
+          }
           $("#searchResults").animeResults(responseAnime);
-          /*
-          responseAnime.forEach(function(index, i) {
-            index.image = index.image.split(" 1x, ")[1];
-            index.image = index.image.slice(0, -3);
-            var xhr = new XMLHttpRequest();
-            xhr.responseType = 'blob';
-            xhr.open('GET', index.image, true);
-            var imageUrl;
-            xhr.onload = function(e) {
-              var urlCreator = window.URL || window.webkitURL;
-              imageUrl = urlCreator.createObjectURL(this.response);
-              document.getElementById("searchResult-anime-image-" + index.id).src = imageUrl;
-            };
-            xhr.send();
-            $("#searchResults").append(
-              "<div class=\"searchResult-anime\" data-id=\"" + index.id + "\">" +
-                "<div class=\"searchResult-anime-image\">" +
-                  "<img id=\"searchResult-anime-image-" + index.id + "\" src=\"#\">" +
-                "</div>" +
-                "<div class=\"searchResult-anime-info\">" +
-                  "<span class=\"searchResult-anime-title\">" + index.title + "</span>" +
-                  "<span class=\"searchResult-anime-status\">" + index.score + "</span>" +
-                  "<span class=\"searchResult-anime-type\">" + index.type + "</span>" +
-                  "<span class=\"searchResult-anime-episodes\">" + index.episodes +"</span>" +
-                "</div>" +
-              "</div>"
-            );
-          });
-          */
           loadScreen("finished");
         }
       });
